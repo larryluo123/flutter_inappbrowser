@@ -6,11 +6,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Picture;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebHistoryItem;
@@ -106,6 +111,64 @@ public class InAppWebView extends WebView {
   public void reload() {
     super.reload();
     Log.d(LOG_TAG, "RELOAD");
+  }
+
+  @Override
+  public ActionMode startActionMode(ActionMode.Callback callback) {
+    CustomizedSelectActionModeCallback customizedSelectActionModeCallback = new CustomizedSelectActionModeCallback(callback);
+    return super.startActionMode(customizedSelectActionModeCallback);
+  }
+
+  public class CustomizedSelectActionModeCallback implements ActionMode.Callback {
+    private ActionMode.Callback callback;
+
+    public CustomizedSelectActionModeCallback(ActionMode.Callback callback) {
+
+      this.callback = callback;
+
+    }
+
+    @Override
+
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+      return callback.onCreateActionMode(mode, menu);
+
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+      return callback.onPrepareActionMode(mode, menu);
+
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+      if (item == null || TextUtils.isEmpty(item.getTitle())) {
+        return callback.onActionItemClicked(mode, item);
+      }
+      if (!item.getTitle().toString().contains("搜索")
+              && !item.getTitle().toString().contains("search")) {
+        return callback.onActionItemClicked(mode, item);
+      }
+      loadUrl("javascript:window.search.show(window.getSelection().toString());");
+      clearFocus();
+      return true;
+
+    }
+
+    @Override
+
+    public void onDestroyActionMode(ActionMode mode) {
+      callback.onDestroyActionMode(mode);
+    }
+  }
+
+  public class SelectedText {
+
+    @JavascriptInterface
+    public void show(String data) {
+      // TODO　这里获取选中的文字
+    }
   }
 
   public void prepare() {
