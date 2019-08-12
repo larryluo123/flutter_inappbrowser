@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
@@ -56,6 +57,12 @@ public class InAppWebView extends WebView {
   OkHttpClient httpClient;
   int okHttpClientCacheSize = 10 * 1024 * 1024; // 10MB
     private MenuItem.OnMenuItemClickListener menuHandler;
+
+
+  @Override
+  public boolean onTouchEvent(MotionEvent event) {
+    return super.onTouchEvent(event);
+  }
 
   static final String consoleLogJS = "(function() {" +
           "   var oldLogs = {" +
@@ -106,25 +113,6 @@ public class InAppWebView extends WebView {
       this.flutterWebView = (FlutterWebView) obj;
     this.id = id;
     this.options = options;
-
-      menuHandler = new MenuItem.OnMenuItemClickListener() {
-          @Override
-          public boolean onMenuItemClick(MenuItem item) {
-              switch (item.getItemId()) {
-                  case 1:
-//                      clipData();
-                      break;
-                  case 2:
-//                      redirectToSharePage();
-//                      if(mActionMode != null) {
-//                          mActionMode.finish();
-//                          myWebView.clearFocus();
-//                      }
-                      break;
-              }
-              return true;
-          }
-      };
   }
 
   @Override
@@ -135,6 +123,7 @@ public class InAppWebView extends WebView {
 
   @Override
   public ActionMode startActionMode(ActionMode.Callback callback) {
+    Log.e(LOG_TAG,"startActionMode");
     CustomizedSelectActionModeCallback customizedSelectActionModeCallback = new CustomizedSelectActionModeCallback(callback);
     return super.startActionMode(customizedSelectActionModeCallback);
   }
@@ -146,9 +135,10 @@ public class InAppWebView extends WebView {
       this.callback = callback;
     }
 
-    @Override
 
+    @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+      Log.e(LOG_TAG,"onCreateActionMode");
         for(int i=0; i< menu.size(); i++) {
             MenuItem item = menu.getItem(i);
             String title = item.toString();
@@ -156,8 +146,8 @@ public class InAppWebView extends WebView {
                 item.setVisible(false);
             }
         }
-        menu.add(0, 1, 0, "复制").setOnMenuItemClickListener(menuHandler);
-        menu.add(0, 2, 1, "分享").setOnMenuItemClickListener(menuHandler);
+        menu.add(0, 1, 0, "复制");
+        menu.add(0, 2, 1, "分享");
       return callback.onCreateActionMode(mode, menu);
 
     }
@@ -173,12 +163,6 @@ public class InAppWebView extends WebView {
       if (item == null || TextUtils.isEmpty(item.getTitle())) {
         return callback.onActionItemClicked(mode, item);
       }
-      if (!item.getTitle().toString().contains("搜索")
-              && !item.getTitle().toString().contains("search")) {
-        return callback.onActionItemClicked(mode, item);
-      }
-      loadUrl("javascript:window.search.show(window.getSelection().toString());");
-      clearFocus();
       return true;
 
     }
@@ -188,15 +172,8 @@ public class InAppWebView extends WebView {
     public void onDestroyActionMode(ActionMode mode) {
       callback.onDestroyActionMode(mode);
     }
-  }
 
-  public class SelectedText {
 
-    @JavascriptInterface
-    public void show(String data) {
-      // TODO　这里获取选中的文字
-    }
-  }
 
   public void prepare() {
 
