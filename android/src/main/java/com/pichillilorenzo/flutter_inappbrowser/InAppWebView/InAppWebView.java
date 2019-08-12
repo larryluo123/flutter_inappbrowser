@@ -113,6 +113,7 @@ public class InAppWebView extends WebView {
       this.flutterWebView = (FlutterWebView) obj;
     this.id = id;
     this.options = options;
+    Log.e(LOG_TAG, "InAppWebView cons " + obj);
   }
 
   @Override
