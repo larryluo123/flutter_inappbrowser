@@ -55,6 +55,7 @@ public class InAppWebView extends WebView {
   public boolean isLoading = false;
   OkHttpClient httpClient;
   int okHttpClientCacheSize = 10 * 1024 * 1024; // 10MB
+    private MenuItem.OnMenuItemClickListener menuHandler;
 
   static final String consoleLogJS = "(function() {" +
           "   var oldLogs = {" +
@@ -105,6 +106,25 @@ public class InAppWebView extends WebView {
       this.flutterWebView = (FlutterWebView) obj;
     this.id = id;
     this.options = options;
+
+      menuHandler = new MenuItem.OnMenuItemClickListener() {
+          @Override
+          public boolean onMenuItemClick(MenuItem item) {
+              switch (item.getItemId()) {
+                  case 1:
+//                      clipData();
+                      break;
+                  case 2:
+//                      redirectToSharePage();
+//                      if(mActionMode != null) {
+//                          mActionMode.finish();
+//                          myWebView.clearFocus();
+//                      }
+                      break;
+              }
+              return true;
+          }
+      };
   }
 
   @Override
@@ -123,14 +143,21 @@ public class InAppWebView extends WebView {
     private ActionMode.Callback callback;
 
     public CustomizedSelectActionModeCallback(ActionMode.Callback callback) {
-
       this.callback = callback;
-
     }
 
     @Override
 
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        for(int i=0; i< menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            String title = item.toString();
+            if(title.equals("复制") || title.equals("分享") || title.equals("网页搜索") || title.equals("全选")) {
+                item.setVisible(false);
+            }
+        }
+        menu.add(0, 1, 0, "复制").setOnMenuItemClickListener(menuHandler);
+        menu.add(0, 2, 1, "分享").setOnMenuItemClickListener(menuHandler);
       return callback.onCreateActionMode(mode, menu);
 
     }
