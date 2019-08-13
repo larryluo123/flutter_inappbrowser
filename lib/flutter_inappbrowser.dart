@@ -401,6 +401,10 @@ class InAppBrowser {
 
   }
 
+  void onSelectText(String url,String text) {
+
+  }
+
   ///Event fires when the [InAppBrowser] webview loads a resource.
   ///
   ///**NOTE**: In order to be able to listen this event, you need to set `useOnLoadResource` option to `true`.
@@ -548,6 +552,7 @@ typedef onWebViewLoadErrorCallback = void Function(InAppWebViewController contro
 typedef onWebViewProgressChangedCallback = void Function(InAppWebViewController controller, int progress);
 typedef onWebViewConsoleMessageCallback = void Function(InAppWebViewController controller, ConsoleMessage consoleMessage);
 typedef shouldOverrideUrlLoadingCallback = void Function(InAppWebViewController controller, String url);
+typedef onSelectTextCallback = void Function(InAppWebViewController controller, String url,String text);
 typedef onWebViewLoadResourceCallback = void Function(InAppWebViewController controller, WebResourceResponse response, WebResourceRequest request);
 typedef onWebViewScrollChangedCallback = void Function(InAppWebViewController controller, int x, int y);
 
@@ -642,6 +647,9 @@ class InAppWebView extends StatefulWidget {
   ///**NOTE only for iOS**: In some cases, the [response.data] of a [response] with `text/assets` encoding could be empty.
   final onWebViewLoadResourceCallback onLoadResource;
 
+  //add by luorui for ios select text custom share
+  final onSelectTextCallback onSelectText;
+
   ///Event fires when the [InAppWebView] scrolls.
   ///[x] represents the current horizontal scroll origin in pixels.
   ///[y] represents the current vertical scroll origin in pixels.
@@ -680,6 +688,7 @@ class InAppWebView extends StatefulWidget {
     this.onConsoleMessage,
     this.onProgressChanged,
     this.shouldOverrideUrlLoading,
+    this.onSelectText,
     this.onLoadResource,
     this.onScrollChanged,
     this.gestureRecognizers,
@@ -696,6 +705,7 @@ class _InAppWebViewState extends State<InAppWebView> {
   @override
   void dispose() {
     super.dispose();
+    print("_InAppWebViewState dispose");
     if (_controller != null) {
       _controller._dispose();
       _controller = null;
@@ -887,6 +897,15 @@ class InAppWebViewController {
             return null;
           }
         }
+        break;
+      case "onSelectText":
+        String text = call.arguments["text"];
+        String url = call.arguments["url"];
+        print("plugin webview slecttext url $url");
+        if (_widget != null && _widget.onSelectText != null)
+          _widget.onSelectText(this, url, text);
+        else if (_inAppBrowser != null)
+          _inAppBrowser.onSelectText(url, text);
         break;
       default:
         throw UnimplementedError("Unimplemented ${call.method} method");

@@ -15,6 +15,7 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
@@ -58,11 +59,6 @@ public class InAppWebView extends WebView {
   int okHttpClientCacheSize = 10 * 1024 * 1024; // 10MB
     private MenuItem.OnMenuItemClickListener menuHandler;
 
-
-  @Override
-  public boolean onTouchEvent(MotionEvent event) {
-    return super.onTouchEvent(event);
-  }
 
   static final String consoleLogJS = "(function() {" +
           "   var oldLogs = {" +
@@ -114,6 +110,7 @@ public class InAppWebView extends WebView {
     this.id = id;
     this.options = options;
     Log.e(LOG_TAG, "InAppWebView cons " + obj);
+
   }
 
   @Override
@@ -123,10 +120,29 @@ public class InAppWebView extends WebView {
   }
 
   @Override
+  public ActionMode startActionModeForChild(View originalView, ActionMode.Callback callback) {
+    Log.e(LOG_TAG,"startActionModeForChild");
+    return super.startActionModeForChild(originalView, callback);
+  }
+
+  @Override
+  public ActionMode startActionModeForChild(View originalView, ActionMode.Callback callback, int type) {
+    Log.e(LOG_TAG,"startActionModeForChild type " + type);
+    return super.startActionModeForChild(originalView, callback, type);
+  }
+
+  @Override
   public ActionMode startActionMode(ActionMode.Callback callback) {
     Log.e(LOG_TAG,"startActionMode");
     CustomizedSelectActionModeCallback customizedSelectActionModeCallback = new CustomizedSelectActionModeCallback(callback);
     return super.startActionMode(customizedSelectActionModeCallback);
+  }
+
+  @Override
+  public ActionMode startActionMode(ActionMode.Callback callback, int type) {
+    Log.e(LOG_TAG,"startActionMode type " + type);
+    CustomizedSelectActionModeCallback customizedSelectActionModeCallback = new CustomizedSelectActionModeCallback(callback);
+    return super.startActionMode(customizedSelectActionModeCallback, type);
   }
 
   public class CustomizedSelectActionModeCallback implements ActionMode.Callback {
@@ -139,16 +155,16 @@ public class InAppWebView extends WebView {
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-      Log.e(LOG_TAG,"onCreateActionMode");
-        for(int i=0; i< menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
-            String title = item.toString();
-            if(title.equals("复制") || title.equals("分享") || title.equals("网页搜索") || title.equals("全选")) {
-                item.setVisible(false);
-            }
+      Log.e(LOG_TAG, "onCreateActionMode");
+      for (int i = 0; i < menu.size(); i++) {
+        MenuItem item = menu.getItem(i);
+        String title = item.toString();
+        if (title.equals("复制") || title.equals("分享") || title.equals("网页搜索") || title.equals("全选")) {
+          item.setVisible(false);
         }
-        menu.add(0, 1, 0, "复制");
-        menu.add(0, 2, 1, "分享");
+      }
+      menu.add(0, 1, 0, "复制");
+      menu.add(0, 2, 1, "分享");
       return callback.onCreateActionMode(mode, menu);
 
     }
@@ -174,7 +190,7 @@ public class InAppWebView extends WebView {
       callback.onDestroyActionMode(mode);
     }
 
-
+  }
 
   public void prepare() {
 
