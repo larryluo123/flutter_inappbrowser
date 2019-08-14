@@ -46,6 +46,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
     options.parse(initialOptions);
 
     webView = new InAppWebView(registrar, this, id, options);
+    webView.setOnLongClickListener(new View.OnLongClickListener() {
+      @Override
+      public boolean onLongClick(View v) {
+        return false;
+      }
+    });
     webView.prepare();
 
     channel = new MethodChannel(registrar.messenger(), "com.pichillilorenzo/flutter_inappwebview_" + id);
@@ -219,14 +225,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler  {
   @Override
   public void dispose() {
     if (webView != null) {
-      webView.setWebChromeClient(new WebChromeClient());
-      webView.setWebViewClient(new WebViewClient() {
-        public void onPageFinished(WebView view, String url) {
-          webView.destroy();
-          webView = null;
-        }
-      });
-      webView.loadUrl("about:blank");
+      webView.removeAllViews();
+      webView.destroy();
+      webView = null;
     }
   }
 }

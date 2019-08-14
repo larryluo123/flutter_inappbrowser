@@ -715,14 +715,10 @@ class _InAppWebViewState extends State<InAppWebView> {
   @override
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return GestureDetector(
-        onLongPress: () {},
-        excludeFromSemantics: true,
-        child: AndroidView(
+      return  AndroidView(
           viewType: 'com.pichillilorenzo/flutter_inappwebview',
           onPlatformViewCreated: _onPlatformViewCreated,
           gestureRecognizers: widget.gestureRecognizers,
-          layoutDirection: TextDirection.rtl,
           creationParams: <String, dynamic>{
               'initialUrl': widget.initialUrl,
               'initialFile': widget.initialFile,
@@ -731,7 +727,6 @@ class _InAppWebViewState extends State<InAppWebView> {
               'initialOptions': widget.initialOptions
             },
           creationParamsCodec: const StandardMessageCodec(),
-        ),
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(

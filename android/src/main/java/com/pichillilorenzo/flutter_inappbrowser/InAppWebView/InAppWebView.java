@@ -1,5 +1,7 @@
 package com.pichillilorenzo.flutter_inappbrowser.InAppWebView;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -23,6 +25,7 @@ import android.webkit.WebBackForwardList;
 import android.webkit.WebHistoryItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import com.pichillilorenzo.flutter_inappbrowser.FlutterWebView;
 import com.pichillilorenzo.flutter_inappbrowser.InAppBrowserActivity;
@@ -110,6 +113,49 @@ public class InAppWebView extends WebView {
     this.id = id;
     this.options = options;
     Log.e(LOG_TAG, "InAppWebView cons " + obj);
+    menuHandler = new MenuItem.OnMenuItemClickListener() {
+      @Override
+      public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+          case 1:
+            clipData();
+            break;
+          case 2:
+           share();
+            break;
+        }
+        return true;
+      }
+    };
+  }
+
+  private void share(){
+    Log.e(LOG_TAG,"share......");
+    this.evaluateJavascript("window.getSelection().toString();", new ValueCallback<String>() {
+      @Override
+      public void onReceiveValue(String value) {
+        Log.e(LOG_TAG,"onReceiveValue......" + value);
+        Map<String, Object> obj = new HashMap<>();
+        obj.put("text", value);
+        obj.put("url", getUrl());
+        getChannel().invokeMethod("onSelectText", obj);
+        clearFocus();
+      }
+    });
+  }
+
+  private void clipData() {
+    this.evaluateJavascript("window.getSelection().toString();", new ValueCallback<String>() {
+      @Override
+      public void onReceiveValue(String value) {
+        value = value.substring(1, value.length()-1);
+        ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData mClipData = ClipData.newPlainText("Label", value);
+        cm.setPrimaryClip(mClipData);
+        Toast.makeText(getContext(),"复制成功",0).show();
+        clearFocus();
+      }
+    });
 
   }
 
@@ -119,81 +165,61 @@ public class InAppWebView extends WebView {
     Log.d(LOG_TAG, "RELOAD");
   }
 
-  @Override
-  public ActionMode startActionModeForChild(View originalView, ActionMode.Callback callback) {
-    Log.e(LOG_TAG,"startActionModeForChild");
-    return super.startActionModeForChild(originalView, callback);
-  }
-
-  @Override
-  public ActionMode startActionModeForChild(View originalView, ActionMode.Callback callback, int type) {
-    Log.e(LOG_TAG,"startActionModeForChild type " + type);
-    return super.startActionModeForChild(originalView, callback, type);
-  }
 
   @Override
   public ActionMode startActionMode(ActionMode.Callback callback) {
-    Log.e(LOG_TAG,"startActionMode");
-    CustomizedSelectActionModeCallback customizedSelectActionModeCallback = new CustomizedSelectActionModeCallback(callback);
-    return super.startActionMode(customizedSelectActionModeCallback);
+    Log.e(LOG_TAG,"startActionMode  1111");
+    ActionMode actionMode = super.startActionMode(callback);
+    return resolveMode(actionMode);
   }
 
   @Override
   public ActionMode startActionMode(ActionMode.Callback callback, int type) {
-    Log.e(LOG_TAG,"startActionMode type " + type);
-    CustomizedSelectActionModeCallback customizedSelectActionModeCallback = new CustomizedSelectActionModeCallback(callback);
-    return super.startActionMode(customizedSelectActionModeCallback, type);
+    Log.e(LOG_TAG,"startActionMode  2222");
+    ActionMode actionMode = super.startActionMode(callback, type);
+    return resolveMode(actionMode);
   }
 
-  public class CustomizedSelectActionModeCallback implements ActionMode.Callback {
-    private ActionMode.Callback callback;
-
-    public CustomizedSelectActionModeCallback(ActionMode.Callback callback) {
-      this.callback = callback;
-    }
-
-
-    @Override
-    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-      Log.e(LOG_TAG, "onCreateActionMode");
-      for (int i = 0; i < menu.size(); i++) {
+  public ActionMode resolveMode(ActionMode actionMode) {
+    if (actionMode != null){
+      final Menu menu = actionMode.getMenu();
+      Log.e(LOG_TAG,"resolveMode  2222 " + menu.size());
+      for(int i = 0; i< menu.size(); i++) {
         MenuItem item = menu.getItem(i);
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+          @Override
+          public boolean onMenuItemClick(MenuItem item) {
+            return false;
+          }
+        });
         String title = item.toString();
-        if (title.equals("复制") || title.equals("分享") || title.equals("网页搜索") || title.equals("全选")) {
+        if(title.equals("复制") || title.equals("分享") || title.equals("网页搜索") || title.equals("全选")) {
           item.setVisible(false);
         }
       }
-      menu.add(0, 1, 0, "复制");
-      menu.add(0, 2, 1, "分享");
-      return callback.onCreateActionMode(mode, menu);
-
+      menu.add(0, 1, 0, "复制").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+          Log.e(LOG_TAG," onMenuItemClick copy");
+          clipData();
+          return true;
+        }
+      });
+      menu.add(0, 2, 1, "分享").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+          Log.e(LOG_TAG," onMenuItemClick sahre");
+          share();
+          return true;
+        }
+      });
     }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-      return callback.onPrepareActionMode(mode, menu);
-
-    }
-
-    @Override
-    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-      if (item == null || TextUtils.isEmpty(item.getTitle())) {
-        return callback.onActionItemClicked(mode, item);
-      }
-      return true;
-
-    }
-
-    @Override
-
-    public void onDestroyActionMode(ActionMode mode) {
-      callback.onDestroyActionMode(mode);
-    }
-
+    return actionMode;
   }
 
   public void prepare() {
 
+    getSettings().setDomStorageEnabled(true);
     boolean isFromInAppBrowserActivity = inAppBrowserActivity != null;
 
     httpClient = new OkHttpClient().newBuilder().cache(new Cache(getContext().getCacheDir(), okHttpClientCacheSize)).build();
