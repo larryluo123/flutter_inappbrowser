@@ -29,41 +29,41 @@ func convertToDictionary(text: String) -> [String: Any]? {
 // the message needs to be concatenated with '' in order to have the same behavior like on Android
 let consoleLogJS = """
 (function() {
-    var oldLogs = {
-        'consoleLog': console.log,
-        'consoleDebug': console.debug,
-        'consoleError': console.error,
-        'consoleInfo': console.info,
-        'consoleWarn': console.warn
-    };
+var oldLogs = {
+'consoleLog': console.log,
+'consoleDebug': console.debug,
+'consoleError': console.error,
+'consoleInfo': console.info,
+'consoleWarn': console.warn
+};
 
-    for (var k in oldLogs) {
-        (function(oldLog) {
-            console[oldLog.replace('console', '').toLowerCase()] = function() {
-                var message = '';
-                for (var i in arguments) {
-                    if (message == '') {
-                        message += arguments[i];
-                    }
-                    else {
-                        message += ' ' + arguments[i];
-                    }
-                }
-                window.webkit.messageHandlers[oldLog].postMessage(message);
-            }
-        })(k);
-    }
+for (var k in oldLogs) {
+(function(oldLog) {
+console[oldLog.replace('console', '').toLowerCase()] = function() {
+var message = '';
+for (var i in arguments) {
+if (message == '') {
+message += arguments[i];
+}
+else {
+message += ' ' + arguments[i];
+}
+}
+window.webkit.messageHandlers[oldLog].postMessage(message);
+}
+})(k);
+}
 })();
 """
 
 let resourceObserverJS = """
 (function() {
-    var observer = new PerformanceObserver(function(list) {
-        list.getEntries().forEach(function(entry) {
-            window.webkit.messageHandlers['resourceLoaded'].postMessage(JSON.stringify(entry));
-        });
-    });
-    observer.observe({entryTypes: ['resource', 'mark', 'measure']});
+var observer = new PerformanceObserver(function(list) {
+list.getEntries().forEach(function(entry) {
+window.webkit.messageHandlers['resourceLoaded'].postMessage(JSON.stringify(entry));
+});
+});
+observer.observe({entryTypes: ['resource', 'mark', 'measure']});
 })();
 """
 
@@ -72,11 +72,11 @@ let JAVASCRIPT_BRIDGE_NAME = "flutter_inappbrowser"
 let javaScriptBridgeJS = """
 window.\(JAVASCRIPT_BRIDGE_NAME) = {};
 window.\(JAVASCRIPT_BRIDGE_NAME).callHandler = function() {
-    var _callHandlerID = setTimeout(function(){});
-    window.webkit.messageHandlers['callHandler'].postMessage( {'handlerName': arguments[0], '_callHandlerID': _callHandlerID, 'args': JSON.stringify(Array.prototype.slice.call(arguments, 1))} );
-    return new Promise(function(resolve, reject) {
-        window.\(JAVASCRIPT_BRIDGE_NAME)[_callHandlerID] = resolve;
-    });
+var _callHandlerID = setTimeout(function(){});
+window.webkit.messageHandlers['callHandler'].postMessage( {'handlerName': arguments[0], '_callHandlerID': _callHandlerID, 'args': JSON.stringify(Array.prototype.slice.call(arguments, 1))} );
+return new Promise(function(resolve, reject) {
+window.\(JAVASCRIPT_BRIDGE_NAME)[_callHandlerID] = resolve;
+});
 }
 """
 
@@ -560,6 +560,10 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
                 return
             }
 
+            let requestPath = navigationAction.request.url?.path
+            print(requestPath!)
+            onLoadResourceIOS(url:requestPath!)
+
             if navigationAction.navigationType == .linkActivated || navigationAction.navigationType == .backForward {
                 currentURL = url
                 if IABController != nil {
@@ -744,6 +748,13 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
         }
         if let channel = getChannel() {
             channel.invokeMethod("onLoadResource", arguments: arguments)
+        }
+    }
+
+    public func onLoadResourceIOS(url: String) {
+        let arguments: [String: Any] = ["url": url]
+        if let channel = getChannel() {
+            channel.invokeMethod("onLoadResourceIOS", arguments: arguments)
         }
     }
 

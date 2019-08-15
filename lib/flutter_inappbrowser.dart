@@ -414,6 +414,10 @@ class InAppBrowser {
 
   }
 
+  void onLoadResourceIOS(String request) {
+
+  }
+
   ///Event fires when the [InAppBrowser] webview scrolls.
   ///[x] represents the current horizontal scroll origin in pixels.
   ///[y] represents the current vertical scroll origin in pixels.
@@ -554,6 +558,7 @@ typedef onWebViewConsoleMessageCallback = void Function(InAppWebViewController c
 typedef shouldOverrideUrlLoadingCallback = void Function(InAppWebViewController controller, String url);
 typedef onSelectTextCallback = void Function(InAppWebViewController controller, String url,String text);
 typedef onWebViewLoadResourceCallback = void Function(InAppWebViewController controller, WebResourceResponse response, WebResourceRequest request);
+typedef onWebViewLoadResourceIOSCallback = void Function(InAppWebViewController controller, String url);
 typedef onWebViewScrollChangedCallback = void Function(InAppWebViewController controller, int x, int y);
 
 ///Initial [data] as a content for an [InAppWebView] instance, using [baseUrl] as the base URL for it.
@@ -647,6 +652,9 @@ class InAppWebView extends StatefulWidget {
   ///**NOTE only for iOS**: In some cases, the [response.data] of a [response] with `text/assets` encoding could be empty.
   final onWebViewLoadResourceCallback onLoadResource;
 
+  ///**NOTE only for iOS**: In some cases.
+  final onWebViewLoadResourceIOSCallback onLoadResourceIOS;
+
   //add by luorui for ios select text custom share
   final onSelectTextCallback onSelectText;
 
@@ -690,6 +698,7 @@ class InAppWebView extends StatefulWidget {
     this.shouldOverrideUrlLoading,
     this.onSelectText,
     this.onLoadResource,
+    this.onLoadResourceIOS,
     this.onScrollChanged,
     this.gestureRecognizers,
   }) : super(key: key);
@@ -854,6 +863,15 @@ class InAppWebViewController {
           _widget.onLoadResource(this, response, request);
         else if (_inAppBrowser != null)
           _inAppBrowser.onLoadResource(response, request);
+        break;
+
+      case "onLoadResourceIOS":
+        print("call onLoadResourceIOS...... ");
+        String url = call.arguments["url"];
+        if (_widget != null && _widget.onLoadResourceIOS != null)
+          _widget.onLoadResourceIOS(this, url);
+        else if (_inAppBrowser != null)
+          _inAppBrowser.onLoadResourceIOS(url);
         break;
       case "onConsoleMessage":
         String sourceURL = call.arguments["sourceURL"];
