@@ -101,6 +101,8 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
         enableCustomMenu()
     }
 
+
+
     //add custom menu by luorui
     func enableCustomMenu() {
         let copy = UIMenuItem(title: "复制", action: #selector(customCopy))
@@ -879,4 +881,14 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
     private func getChannel() -> FlutterMethodChannel? {
         return (IABController != nil) ? SwiftFlutterPlugin.channel! : ((IAWController != nil) ? IAWController!.channel! : nil);
     }
+
+    //add custom menu by luorui
+    open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(paste(_:)) || action == #selector(customCopy) || action == #selector(customShare)  {
+            return true
+        }
+        return false
+    }
 }
+
+

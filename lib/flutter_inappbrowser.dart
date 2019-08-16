@@ -866,7 +866,6 @@ class InAppWebViewController {
         break;
 
       case "onLoadResourceIOS":
-        print("call onLoadResourceIOS...... ");
         String url = call.arguments["url"];
         if (_widget != null && _widget.onLoadResourceIOS != null)
           _widget.onLoadResourceIOS(this, url);
