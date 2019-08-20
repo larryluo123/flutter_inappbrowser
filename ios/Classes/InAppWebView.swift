@@ -884,7 +884,7 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
 
     //add custom menu by luorui
     open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(paste(_:)) || action == #selector(customCopy) || action == #selector(customShare)  {
+        if action == #selector(customCopy) || action == #selector(customShare)  {
             return true
         }
         return false
