@@ -233,6 +233,15 @@ public class FlutterWebViewController: NSObject, FlutterPlatformView {
                 dispose()
                 result(true)
                 break
+                //add by luorui
+            case "scrollToBottom":
+                if webView != nil {
+                    webView!.scrollToBottom()
+                }
+                else {
+                    result(nil)
+                }
+                break
             default:
                 result(FlutterMethodNotImplemented)
                 break

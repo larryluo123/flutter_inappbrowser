@@ -1172,6 +1172,11 @@ class InAppWebViewController {
     return await _channel.invokeMethod('injectScriptCode', args);
   }
 
+  //add by luorui
+  Future<String> scrollToBottom() async {
+    return await _channel.invokeMethod('scrollToBottom');
+  }
+
   ///Injects a JavaScript file into the [InAppWebView] window.
   Future<void> injectScriptFile(String urlFile) async {
     Map<String, dynamic> args = <String, dynamic>{};

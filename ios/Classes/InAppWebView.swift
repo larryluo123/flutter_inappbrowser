@@ -889,6 +889,12 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
         }
         return false
     }
+    
+    //add by luorui
+    public func scrollToBottom() {
+        let scrollPoint = CGPoint(x: 0, y: scrollView.contentSize.height - frame.size.height)
+        scrollView.setContentOffset(scrollPoint, animated: true )
+    }
 }
 
 
