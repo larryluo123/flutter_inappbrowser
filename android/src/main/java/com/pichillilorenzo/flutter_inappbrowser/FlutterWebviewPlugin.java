@@ -8,8 +8,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -39,6 +41,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private Context context;
     static MethodChannel channel;
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
+    private static final String TAG = "FlutterWebviewPlugin";
     TextView webTitle;
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
@@ -198,7 +201,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         });
         LinearLayout linearLayout = new LinearLayout(activity);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-        Log.e("paddingTop","paddingTop " + paddingTop);
+        Log.e(TAG,"paddingTop " + paddingTop);
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.topMargin = (int) paddingTop;
@@ -251,6 +254,19 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
 
     private void setWebTitle(MethodCall call, MethodChannel.Result result){
         String title = call.argument("title");
+        int textSize = call.argument("textSize") == null ? 0  : (Integer) call.argument("textSize");
+        String textColor = call.argument("textColor");
+        boolean isBold = call.argument("isBold") == null ? false : (Boolean)call.argument("isBold");
+        if(textColor != null){
+            webTitle.setTextColor(Color.parseColor(textColor)); // #ff00ff
+        }
+        if(isBold){
+            webTitle.getPaint().setFakeBoldText(true);
+        }
+        if(textSize > 0){
+            Log.e(TAG, "textSize " + textSize);
+            webTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP,textSize); //P
+        }
         if(webTitle != null){
             webTitle.setText(" " + title);
         }

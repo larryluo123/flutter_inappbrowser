@@ -299,9 +299,21 @@ class FlutterWebviewPlugin {
     await _channel.invokeMethod('reloadUrl', args);
   }
 
-  // set webview title
-  Future<Null> setWebTitle(String title, {Map<String, String> headers}) async {
-    final args = <String, dynamic>{'title': title};
+  //textColor eg: "#ff0000"
+  Future<Null> setWebTitle(String title, {String textColor,int textSize,bool isBold}) async {
+    Map<String, dynamic> args = <String, dynamic>{};
+    if (title != null) {
+      args.putIfAbsent('title', () => title);
+    }
+    if(textColor != null){
+      args.putIfAbsent('textColor', () => textColor);
+    }
+    if(textSize != null){
+      args.putIfAbsent('textSize', () => textSize);
+    }
+    if(isBold != null){
+      args.putIfAbsent('isBold', () => isBold);
+    }
     await _channel.invokeMethod('setWebTitle', args);
   }
 
