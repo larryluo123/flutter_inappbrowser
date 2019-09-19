@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappbrowser/flutter_inappbrowser.dart';
 import 'package:flutter_inappbrowser_example/chrome_safari_example.screen.dart';
 import 'package:flutter_inappbrowser_example/inline_example.screen.dart';
+import 'package:flutter_inappbrowser_example/web_scafford.dart';
 import 'package:flutter_inappbrowser_example/webview_example.screen.dart';
 
 // InAppLocalhostServer localhostServer = new InAppLocalhostServer();
@@ -36,16 +37,18 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           appBar: AppBar(
             title: Text('Tabs Demo'),
           ),
+
           body: TabBarView(
             children: [
               WebviewExampleScreen(),
               ChromeSafariExampleScreen(),
               InlineExampleScreen(),
+              WebScafford(),
             ],
           ),
           bottomNavigationBar: Container(
@@ -55,9 +58,8 @@ class _MyAppState extends State<MyApp> {
               tabs: [
                 Tab(text: "Webview"),
                 Tab(text: "Chrome/Safari"),
-                Tab(
-                  text: "Inline",
-                ),
+                Tab(text: "Inline",),
+                Tab(text: "WebScafford",),
               ],
             ),
           ))),

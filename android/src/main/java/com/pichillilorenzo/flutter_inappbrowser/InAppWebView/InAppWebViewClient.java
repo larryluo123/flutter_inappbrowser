@@ -212,23 +212,23 @@ public class InAppWebViewClient extends WebViewClient {
     }
 
     // https://issues.apache.org/jira/browse/CB-11248
-//    view.clearFocus();
-//    view.requestFocus();
+    view.clearFocus();
+    view.requestFocus();
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//      view.evaluateJavascript(InAppWebView.consoleLogJS, null);
-//      view.evaluateJavascript(JavaScriptBridgeInterface.flutterInAppBroserJSClass, new ValueCallback<String>() {
-//        @Override
-//        public void onReceiveValue(String value) {
-////          view.evaluateJavascript(InAppWebView.platformReadyJS, null);
-//        }
-//      });
+      view.evaluateJavascript(InAppWebView.consoleLogJS, null);
+      view.evaluateJavascript(JavaScriptBridgeInterface.flutterInAppBroserJSClass, new ValueCallback<String>() {
+        @Override
+        public void onReceiveValue(String value) {
+          view.evaluateJavascript(InAppWebView.platformReadyJS, null);
+        }
+      });
 
     }
     else {
-//      view.loadUrl("javascript:"+InAppWebView.consoleLogJS);
-//      view.loadUrl("javascript:"+JavaScriptBridgeInterface.flutterInAppBroserJSClass);
-//      view.loadUrl("javascript:"+InAppWebView.platformReadyJS);
+      view.loadUrl("javascript:"+InAppWebView.consoleLogJS);
+      view.loadUrl("javascript:"+JavaScriptBridgeInterface.flutterInAppBroserJSClass);
+      view.loadUrl("javascript:"+InAppWebView.platformReadyJS);
     }
 
     Map<String, Object> obj = new HashMap<>();
@@ -297,106 +297,106 @@ public class InAppWebViewClient extends WebViewClient {
     super.onReceivedHttpAuthRequest(view, handler, host, realm);
   }
 
-//  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-//  @Override
-//  public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-//    if (!request.getMethod().toLowerCase().equals("get") ||
-//            !(((inAppBrowserActivity != null) ? inAppBrowserActivity.webView : flutterWebView.webView).options.useOnLoadResource)) {
-//      return null;
-//    }
-//
-//    final String url = request.getUrl().toString();
-//
-//    try {
-//      Request mRequest = new Request.Builder().url(url).build();
-//
-//      long startResourceTime = System.currentTimeMillis();
-//      Response response = ((inAppBrowserActivity != null) ? inAppBrowserActivity.webView : flutterWebView.webView).httpClient.newCall(mRequest).execute();
-//      long startTime = startResourceTime - startPageTime;
-//      startTime = (startTime < 0) ? 0 : startTime;
-//      long duration = System.currentTimeMillis() - startResourceTime;
-//
-//      if (response.cacheResponse() != null) {
-//        duration = 0;
-//      }
-//
-//      String reasonPhrase = response.message();
-//      if (reasonPhrase.equals("")) {
-//        reasonPhrase = statusCodeMapping.get(response.code());
-//      }
-//      reasonPhrase = (reasonPhrase.equals("") || reasonPhrase == null) ? "OK" : reasonPhrase;
-//
-//      Map<String, String> headersResponse = new HashMap<String, String>();
-//      for (Map.Entry<String, List<String>> entry : response.headers().toMultimap().entrySet()) {
-//        StringBuilder value = new StringBuilder();
-//        for (String val : entry.getValue()) {
-//          value.append((value.toString().isEmpty()) ? val : "; " + val);
-//        }
-//        headersResponse.put(entry.getKey().toLowerCase(), value.toString());
-//      }
-//
-//      Map<String, String> headersRequest = new HashMap<String, String>();
-//      for (Map.Entry<String, List<String>> entry : mRequest.headers().toMultimap().entrySet()) {
-//        StringBuilder value = new StringBuilder();
-//        for (String val : entry.getValue()) {
-//          value.append((value.toString().isEmpty()) ? val : "; " + val);
-//        }
-//        headersRequest.put(entry.getKey().toLowerCase(), value.toString());
-//      }
-//
-//      final Map<String, Object> obj = new HashMap<>();
-//      Map<String, Object> res = new HashMap<>();
-//      Map<String, Object> req = new HashMap<>();
-//
-//      if (inAppBrowserActivity != null)
-//        obj.put("uuid", inAppBrowserActivity.uuid);
-//
-//      byte[] dataBytes = response.body().bytes();
-//      InputStream dataStream = new ByteArrayInputStream(dataBytes);
-//
-//      res.put("url", url);
-//      res.put("statusCode", response.code());
-//      res.put("headers", headersResponse);
-//      res.put("startTime", startTime);
-//      res.put("duration", duration);
-//      res.put("data", dataBytes);
-//
-//      req.put("url", url);
-//      req.put("headers", headersRequest);
-//      req.put("method", mRequest.method());
-//
-//      obj.put("response", res);
-//      obj.put("request", req);
-//
-//      // java.lang.RuntimeException: Methods marked with @UiThread must be executed on the main thread.
-//      // https://github.com/pichillilorenzo/flutter_inappbrowser/issues/98
-//      final Handler handler = new Handler(Looper.getMainLooper());
-//      handler.post(new Runnable() {
-//         @Override
-//         public void run() {
-//           getChannel().invokeMethod("onLoadResource", obj);
-//         }
-//       });
-//
-//      // this return is not working (it blocks some resources), so return null
-////      return new WebResourceResponse(
-////              response.header("content-type", "text/plain").split(";")[0].trim(),
-////              response.header("content-encoding", "utf-8"),
-////              response.code(),
-////              reasonPhrase,
-////              headersResponse,
-////              dataStream
-////      );
-//    } catch (IOException e) {
-//      e.printStackTrace();
-//      Log.d(LOG_TAG, e.getMessage());
-//    } catch (Exception e) {
-//      e.printStackTrace();
-//      Log.d(LOG_TAG, e.getMessage());
-//    }
-//
-//    return null;
-//  }
+  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+  @Override
+  public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+    if (!request.getMethod().toLowerCase().equals("get") ||
+            !(((inAppBrowserActivity != null) ? inAppBrowserActivity.webView : flutterWebView.webView).options.useOnLoadResource)) {
+      return null;
+    }
+
+    final String url = request.getUrl().toString();
+
+    try {
+      Request mRequest = new Request.Builder().url(url).build();
+
+      long startResourceTime = System.currentTimeMillis();
+      Response response = ((inAppBrowserActivity != null) ? inAppBrowserActivity.webView : flutterWebView.webView).httpClient.newCall(mRequest).execute();
+      long startTime = startResourceTime - startPageTime;
+      startTime = (startTime < 0) ? 0 : startTime;
+      long duration = System.currentTimeMillis() - startResourceTime;
+
+      if (response.cacheResponse() != null) {
+        duration = 0;
+      }
+
+      String reasonPhrase = response.message();
+      if (reasonPhrase.equals("")) {
+        reasonPhrase = statusCodeMapping.get(response.code());
+      }
+      reasonPhrase = (reasonPhrase.equals("") || reasonPhrase == null) ? "OK" : reasonPhrase;
+
+      Map<String, String> headersResponse = new HashMap<String, String>();
+      for (Map.Entry<String, List<String>> entry : response.headers().toMultimap().entrySet()) {
+        StringBuilder value = new StringBuilder();
+        for (String val : entry.getValue()) {
+          value.append((value.toString().isEmpty()) ? val : "; " + val);
+        }
+        headersResponse.put(entry.getKey().toLowerCase(), value.toString());
+      }
+
+      Map<String, String> headersRequest = new HashMap<String, String>();
+      for (Map.Entry<String, List<String>> entry : mRequest.headers().toMultimap().entrySet()) {
+        StringBuilder value = new StringBuilder();
+        for (String val : entry.getValue()) {
+          value.append((value.toString().isEmpty()) ? val : "; " + val);
+        }
+        headersRequest.put(entry.getKey().toLowerCase(), value.toString());
+      }
+
+      final Map<String, Object> obj = new HashMap<>();
+      Map<String, Object> res = new HashMap<>();
+      Map<String, Object> req = new HashMap<>();
+
+      if (inAppBrowserActivity != null)
+        obj.put("uuid", inAppBrowserActivity.uuid);
+
+      byte[] dataBytes = response.body().bytes();
+      InputStream dataStream = new ByteArrayInputStream(dataBytes);
+
+      res.put("url", url);
+      res.put("statusCode", response.code());
+      res.put("headers", headersResponse);
+      res.put("startTime", startTime);
+      res.put("duration", duration);
+      res.put("data", dataBytes);
+
+      req.put("url", url);
+      req.put("headers", headersRequest);
+      req.put("method", mRequest.method());
+
+      obj.put("response", res);
+      obj.put("request", req);
+
+      // java.lang.RuntimeException: Methods marked with @UiThread must be executed on the main thread.
+      // https://github.com/pichillilorenzo/flutter_inappbrowser/issues/98
+      final Handler handler = new Handler(Looper.getMainLooper());
+      handler.post(new Runnable() {
+         @Override
+         public void run() {
+           getChannel().invokeMethod("onLoadResource", obj);
+         }
+       });
+
+      // this return is not working (it blocks some resources), so return null
+//      return new WebResourceResponse(
+//              response.header("content-type", "text/plain").split(";")[0].trim(),
+//              response.header("content-encoding", "utf-8"),
+//              response.code(),
+//              reasonPhrase,
+//              headersResponse,
+//              dataStream
+//      );
+    } catch (IOException e) {
+      e.printStackTrace();
+      Log.d(LOG_TAG, e.getMessage());
+    } catch (Exception e) {
+      e.printStackTrace();
+      Log.d(LOG_TAG, e.getMessage());
+    }
+
+    return null;
+  }
 
   private MethodChannel getChannel() {
     return (inAppBrowserActivity != null) ? InAppBrowserFlutterPlugin.channel : flutterWebView.channel;

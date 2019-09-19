@@ -34,7 +34,7 @@ public class InAppWebChromeClient extends WebChromeClient {
   private final static int FILECHOOSER_RESULTCODE = 1;
 
   private View mCustomView;
-  private WebChromeClient.CustomViewCallback mCustomViewCallback;
+  private CustomViewCallback mCustomViewCallback;
   protected FrameLayout mFullscreenContainer;
   private int mOriginalOrientation;
   private int mOriginalSystemUiVisibility;
@@ -67,7 +67,7 @@ public class InAppWebChromeClient extends WebChromeClient {
     this.mCustomViewCallback = null;
   }
 
-  public void onShowCustomView(View paramView, WebChromeClient.CustomViewCallback paramCustomViewCallback)
+  public void onShowCustomView(View paramView, CustomViewCallback paramCustomViewCallback)
   {
     if (this.mCustomView != null)
     {

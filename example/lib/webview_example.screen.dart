@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappbrowser/flutter_inappbrowser.dart';
+import 'package:flutter_inappbrowser_example/web_scafford.dart';
 
 class MyInappBrowser extends InAppBrowser {
 
@@ -86,13 +87,16 @@ class _WebviewExampleScreenState extends State<WebviewExampleScreen> {
     return new Center(
       child: new RaisedButton(
           onPressed: ()  {
-            widget.browser.open(
-                url: "https://google.com",
-                options: {
-                  "useShouldOverrideUrlLoading": true,
-                  "useOnLoadResource": true,
-                }
-            );
+            Navigator.of(context).push(new MaterialPageRoute(builder: (context){
+              return WebScafford();
+            }));
+//            widget.browser.open(
+//                url: "https://google.com",
+//                options: {
+//                  "useShouldOverrideUrlLoading": true,
+//                  "useOnLoadResource": true,
+//                }
+//            );
           },
           child: Text("Open Webview Browser")),
     );

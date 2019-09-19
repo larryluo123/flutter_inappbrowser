@@ -81,6 +81,7 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
       channel.setMethodCallHandler(new InAppBrowserFlutterPlugin(registrar));
 
       new MyCookieManager(registrar);
+      FlutterWebviewPlugin.registerWith(registrar);
 
       registrar
               .platformViewRegistry()
@@ -367,7 +368,7 @@ public class InAppBrowserFlutterPlugin implements MethodCallHandler {
       this.openExternalExcludeCurrentApp(activity, intent);
       result.success(true);
       // not catching FileUriExposedException explicitly because buildtools<24 doesn't know about it
-    } catch (java.lang.RuntimeException e) {
+    } catch (RuntimeException e) {
       Log.d(LOG_TAG, url + " cannot be opened: " + e.toString());
       result.error(LOG_TAG, url + " cannot be opened!", null);
     }
