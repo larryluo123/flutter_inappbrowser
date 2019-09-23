@@ -317,6 +317,14 @@ class FlutterWebviewPlugin {
     await _channel.invokeMethod('setWebTitle', args);
   }
 
+  Future<Null> showShareIcon({bool showShareIcon}) async {
+    Map<String, dynamic> args = <String, dynamic>{};
+    if(showShareIcon != null){
+      args.putIfAbsent('showShareIcon', () => showShareIcon);
+    }
+    await _channel.invokeMethod('showShareIcon', args);
+  }
+
   // Clean cookies on WebView
   Future<Null> cleanCookies() async => await _channel.invokeMethod('cleanCookies');
 

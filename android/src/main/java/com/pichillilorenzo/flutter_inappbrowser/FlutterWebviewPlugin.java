@@ -21,6 +21,7 @@ import android.widget.FrameLayout;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.os.Build;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -43,6 +44,7 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
     private static final String CHANNEL_NAME = "flutter_webview_plugin";
     private static final String TAG = "FlutterWebviewPlugin";
     TextView webTitle;
+    ImageView ivShare;
 
     public static void registerWith(PluginRegistry.Registrar registrar) {
         Log.e("FlutterWebviewPlugin", "registerWith");
@@ -184,10 +186,11 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
 
         FrameLayout.LayoutParams params = buildLayoutParams(call);
         View view = activity.getLayoutInflater().inflate(R.layout.web_header, null);
-        view.findViewById(R.id.iv_share).setOnClickListener(new View.OnClickListener() {
+        ivShare = (ImageView) view.findViewById(R.id.iv_share);
+        ivShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showShareDialog();
+                showShareDialog();;
             }
         });
 
@@ -250,6 +253,13 @@ public class FlutterWebviewPlugin implements MethodCallHandler, PluginRegistry.A
         }
 
         return params;
+    }
+
+    private void showShareIcon(MethodCall call, MethodChannel.Result result){
+        boolean show = call.argument("showShareIcon") == null ? false : (Boolean)call.argument("showShareIcon");
+        if(ivShare!= null){
+            ivShare.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void setWebTitle(MethodCall call, MethodChannel.Result result){

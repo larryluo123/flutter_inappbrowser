@@ -1,11 +1,13 @@
 package com.pichillilorenzo.flutter_inappbrowser;
-
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.content.Intent;
 import android.net.Uri;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,7 @@ import androidx.core.content.FileProvider;
 import android.database.Cursor;
 import android.provider.OpenableColumns;
 
+import java.io.StringReader;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -456,12 +459,50 @@ class WebviewManager {
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     void eval(MethodCall call, final MethodChannel.Result result) {
-        String code = call.argument("code");
+        String source = call.argument("code");
+        String jsWrapper = "(function(){return JSON.stringify(eval(%s));})();";
+        org.json.JSONArray jsonEsc = new org.json.JSONArray();
+        jsonEsc.put(source);
+        String jsonRepr = jsonEsc.toString();
+        String jsonSourceString = jsonRepr.substring(1, jsonRepr.length() - 1);
+        String scriptToInject = String.format(jsWrapper, jsonSourceString);
 
-        webView.evaluateJavascript(code, new ValueCallback<String>() {
+        webView.evaluateJavascript(scriptToInject, new ValueCallback<String>() {
             @Override
-            public void onReceiveValue(String value) {
-                result.success(value);
+            public void onReceiveValue(String s) {
+                if (result == null)
+                    return;
+
+                JsonReader reader = new JsonReader(new StringReader(s));
+
+                // Must set lenient to parse single values
+                reader.setLenient(true);
+
+                try {
+                    String msg;
+                    if (reader.peek() == JsonToken.STRING) {
+                        msg = reader.nextString();
+
+                        JsonReader reader2 = new JsonReader(new StringReader(msg));
+                        reader2.setLenient(true);
+
+                        if (reader2.peek() == JsonToken.STRING)
+                            msg = reader2.nextString();
+
+                        result.success(msg);
+                    } else {
+                        result.success("");
+                    }
+
+                } catch (IOException e) {
+//                    Log.e(LOG_TAG, "IOException", e);
+                } finally {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        // NOOP
+                    }
+                }
             }
         });
     }
