@@ -129,30 +129,31 @@ public class ObservableWebView extends WebView {
     public ActionMode resolveMode(ActionMode actionMode) {
         if (actionMode != null){
             final Menu menu = actionMode.getMenu();
+            menu.clear();
             Log.e(TAG,"resolveMode  2222 " + menu.size());
-            for(int i = 0; i< menu.size(); i++) {
-                MenuItem item = menu.getItem(i);
-                item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        return false;
-                    }
-                });
-                String title = item.toString();
-                if(title.equals("复制") || title.equals("分享") || title.equals("网页搜索") || title.equals("全选")
-                || title.equals("浏览器搜索") ||title.equals("翻译") || title.equals("搜索") ) {
-                    item.setVisible(false);
-                }
-            }
-            menu.add(0, 1, 0, "复制").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    Log.e(TAG," onMenuItemClick copy");
-                    clipData();
-                    return true;
-                }
-            });
+//            for(int i = 0; i< menu.size(); i++) {
+//                MenuItem item = menu.getItem(i);
+//                item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+//                    @Override
+//                    public boolean onMenuItemClick(MenuItem item) {
+//                        return false;
+//                    }
+//                });
+//                String title = item.toString();
+//                if(title.equals("复制") || title.equals("分享") || title.equals("网页搜索") || title.equals("全选")
+//                || title.equals("浏览器搜索") ||title.equals("翻译") || title.equals("搜索") ) {
+//                    item.setVisible(false);
+//                }
+//            }
+//            menu.add(0, 1, 0, "复制").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+//                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+//                @Override
+//                public boolean onMenuItemClick(MenuItem item) {
+//                    Log.e(TAG," onMenuItemClick copy");
+//                    clipData();
+//                    return true;
+//                }
+//            });
             menu.add(0, 2, 1, "分享").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 @Override
