@@ -898,11 +898,16 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
         scrollView.setContentOffset(scrollPoint, animated: true )
     }
     
+    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        print("gestureRecognizer");
+        return true
+    }
+    
       func addLongPressGes() {
             //添加长按手势
             let longPressGes = UILongPressGestureRecognizer(target: self, action: #selector(longPressedGesture(recognizer:)))
             //一定要遵循代理
-            longPressGes.delegate = self as? UIGestureRecognizerDelegate
+        longPressGes.delegate = self as? UIGestureRecognizerDelegate
             self.addGestureRecognizer(longPressGes)
         }
     

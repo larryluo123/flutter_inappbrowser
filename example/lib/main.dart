@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: DefaultTabController(
-        length: 4,
+        length: 1,
         child: Scaffold(
           appBar: AppBar(
             title: Text('Tabs Demo'),
@@ -45,10 +45,7 @@ class _MyAppState extends State<MyApp> {
 
           body: TabBarView(
             children: [
-              WebviewExampleScreen(),
-              ChromeSafariExampleScreen(),
               InlineExampleScreen(),
-              WebScafford(),
             ],
           ),
           bottomNavigationBar: Container(
@@ -56,10 +53,7 @@ class _MyAppState extends State<MyApp> {
             child: TabBar(
               indicatorColor: Colors.white,
               tabs: [
-                Tab(text: "Webview"),
-                Tab(text: "Chrome/Safari"),
                 Tab(text: "Inline",),
-                Tab(text: "WebScafford",),
               ],
             ),
           ))),
