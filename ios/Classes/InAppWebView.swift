@@ -8,6 +8,7 @@
 import Flutter
 import Foundation
 import WebKit
+import Toaster
 
 func currentTimeInMilliSeconds() -> Int64 {
     let currentDate = Date()
@@ -98,6 +99,7 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
         uiDelegate = self
         navigationDelegate = self
         scrollView.delegate = self
+        addLongPressGes()
         enableCustomMenu()
     }
 
@@ -895,6 +897,60 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
         let scrollPoint = CGPoint(x: 0, y: scrollView.contentSize.height - frame.size.height)
         scrollView.setContentOffset(scrollPoint, animated: true )
     }
+    
+      func addLongPressGes() {
+            //添加长按手势
+            let longPressGes = UILongPressGestureRecognizer(target: self, action: #selector(longPressedGesture(recognizer:)))
+            //一定要遵循代理
+            longPressGes.delegate = self as? UIGestureRecognizerDelegate
+            self.addGestureRecognizer(longPressGes)
+        }
+    
+        @objc func longPressedGesture(recognizer: UILongPressGestureRecognizer) {
+            if recognizer.state != .began { return }
+            let touchPoint = recognizer.location(in: self)
+            //核心代码
+            let urlString = "document.elementFromPoint(\(touchPoint.x), \(touchPoint.y)).src"
+            self.evaluateJavaScript(urlString, completionHandler: { (saveUrl, error) in
+                 print("saveUrl")
+                print(saveUrl)
+                if error != nil {
+                    print(error!)
+                }else if(saveUrl != nil){
+                    self.addAlertAction(imageStr: saveUrl as! String)
+                }
+            })
+        }
+    
+        private func addAlertAction(imageStr: String){
+            let alertController = UIAlertController()
+            let saveAction = UIAlertAction(title: "保存图片", style: .default) { (alertV) in
+                self.saveImageToDisk(imageStr)
+            }
+            //取消保存不作处理
+            let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+    
+            alertController.addAction(saveAction)
+            alertController.addAction(cancelAction)
+              let presentingViewController = ((self.IABController != nil) ? self.IABController! : self.window!.rootViewController!)
+                  presentingViewController.present(alertController, animated: true, completion: {})    }
+    
+        private func saveImageToDisk(_ imageStr: String){
+            guard let imageUrl = URL(string: imageStr) else { return }
+            var image : UIImage!
+            let data = try! Data(contentsOf: imageUrl)
+            image = UIImage(data: data)
+            //保存图片到相册中
+            UIImageWriteToSavedPhotosAlbum(image, self, #selector(save(image:didFinishSavingWithError:contextInfo:)), nil)
+        }
+    
+        @objc func save(image:UIImage, didFinishSavingWithError:NSError?,contextInfo:AnyObject) {
+            if didFinishSavingWithError != nil {
+                Toast(text: "保存失败").show()
+            } else {
+                Toast(text: "保存成功").show()
+            }
+        }
 }
 
 
