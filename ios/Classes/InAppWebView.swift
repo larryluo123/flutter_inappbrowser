@@ -107,9 +107,8 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
 
     //add custom menu by luorui
     func enableCustomMenu() {
-        let copy = UIMenuItem(title: "复制", action: #selector(customCopy))
         let lookup = UIMenuItem(title: "分享", action: #selector(customShare))
-        UIMenuController.shared.menuItems = [copy,lookup]
+        UIMenuController.shared.menuItems = [lookup]
         UIMenuController.shared.update()
     }
 
@@ -885,11 +884,28 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate, WKNavi
     }
 
     //add custom menu by luorui
-    open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if  action == #selector(customShare)  {
-            return true
+    override public func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+         UIMenuController.shared.isMenuVisible = false
+        if #available(iOS 10, *) {
+            if action == #selector(UIResponderStandardEditActions.select(_:))
+                || action == #selector(UIResponderStandardEditActions.cut(_:))
+                || action == #selector(UIResponderStandardEditActions.paste(_:))
+                || action == #selector(UIResponderStandardEditActions.delete(_:))
+                || (action == #selector(customShare))
+            {
+                return super.canPerformAction(action, withSender:sender)
+            }
+        } else {
+            if  action == #selector(select(_:))
+               || action == #selector(cut(_:))
+               || action == #selector(paste(_:))
+               || action == #selector(delete(_:))
+               || (action == #selector(customShare))
+            {
+                return super.canPerformAction(action, withSender:sender)
+            }
         }
-        return false
+       return false
     }
     
     //add by luorui
